@@ -18,71 +18,89 @@ import sys
 #-------------------------------------------------------
 
 def peek(tower):
+    """Return the top of the stack if it exists, or the largest
+    possible integer if it does not."""
 
     try:
         return tower[-1]
-
     except:
         return sys.maxsize
 
+
+def legal_disk_move(tower_1, tower_2):
+    """Given two towers, perform the only legal disk move available."""
+
+    if peek(tower_1) < peek(tower_2):
+        tower_2.append(tower_1.pop())
+    else:
+        tower_1.append(tower_2.pop())
+
+
 def print_tower_states(first, middle, last):
+    """Convenience utility which prints the current states of all towers."""
 
     print()
-
     for tower in (first, middle, last):
         print(tower)
 
+
+def assert_towers_valid(first, middle, last):
+    """Asserts that each tower only has disks in ascending order of size
+    from top to bottom."""
+
+    assert first == sorted(first, reverse=True)
+    assert middle == sorted(middle, reverse=True)
+    assert last == sorted(last, reverse=True)
+
 #-------------------------------------------------------
 
-# Number of disks in Towers of Hanoi game
-N = 10
-previous_move = None
-
+# Create towers
 start_tower = list()
-for num in range(N,0,-1):
-    start_tower.append(num)
-
 middle_tower = list()
 target_tower = list()
 
-print_tower_states(start_tower, middle_tower, target_tower)
+# Let's play Towers of Hanoi with these numbers of disks
+disk_nums_to_try = [1, 2, 5, 7, 8, 13, 20]
 
-if N % 2 == 0:
+# Play each Tower of Hanoi game with N disks
+for N in disk_nums_to_try:
 
+    # Clear previous tower states and then push disks to the starting tower
+    for tower in (start_tower, middle_tower, target_tower):
+        tower.clear()
+
+    start_tower.extend(range(N, 0, -1))
+
+    # Using the iterative algorithm described in Wikipedia's Towers of Hanoi
+    # page, we have to move disks between pairs of towers, in a certain order,
+    # until the game is complete. The order of the pairs of towers is
+    # dependant on whether N is even or odd
+    if N % 2 == 0:
+        ordered_tower_move_pairs = ((start_tower, middle_tower),
+                                    (start_tower, target_tower),
+                                    (middle_tower, target_tower))
+
+    else:
+        ordered_tower_move_pairs = ((start_tower, target_tower),
+                                    (start_tower, middle_tower),
+                                    (middle_tower, target_tower))
+
+    # Swap disks between pairs of tairs, in order, until the final tower has
+    # all of the disks
     while len(target_tower) < N:
 
-        if peek(middle_tower) < peek(start_tower):
-            start_tower.append(middle_tower.pop())
-        else:
-            middle_tower.append(start_tower.pop())
+        for tower_1, tower_2 in ordered_tower_move_pairs:
 
-        if peek(target_tower) < peek(start_tower):
-            start_tower.append(target_tower.pop())
-        else:
-            target_tower.append(start_tower.pop())
+            # Actually perform the disk move
+            legal_disk_move(tower_1, tower_2)
 
-        if peek(target_tower) < peek(middle_tower):
-            middle_tower.append(target_tower.pop())
-        else:
-            target_tower.append(middle_tower.pop())
+            # Assert towers are actually valid after each move
+            # (valid means disks are only on top of a larger disk)
+            assert_towers_valid(start_tower, middle_tower, target_tower)
 
-else:
+            # Break out of the for loop if we're done. If we don't, we might
+            # try to pop from an empty tower
+            if len(target_tower) == N:
+                break
 
-    while len(target_tower) < N:
-
-        if peek(target_tower) < peek(start_tower):
-            start_tower.append(target_tower.pop())
-        else:
-            target_tower.append(start_tower.pop())
-
-        if peek(middle_tower) < peek(start_tower):
-            start_tower.append(middle_tower.pop())
-        else:
-            middle_tower.append(start_tower.pop())
-
-        if peek(target_tower) < peek(middle_tower):
-            middle_tower.append(target_tower.pop())
-        else:
-            target_tower.append(middle_tower.pop())
-
-print_tower_states(start_tower, middle_tower, target_tower)
+    print("Successfully completed {}-tower Towers of Hanoi.".format(N))
