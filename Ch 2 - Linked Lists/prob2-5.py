@@ -9,7 +9,7 @@
 # Input: (3 -> 1 -> 5), (5 -> 9 -> 2)
 # Output: 8 -> 0 -> 8
 
-from LinkedList import get_singly_linked_list_from_values
+from LinkedList import get_singly_linked_list_from_values, linked_lists_equal
 import random
 
 #-------------------------------------------------------
@@ -42,15 +42,16 @@ def add_linked_list_numbers(head_num_one, head_num_two):
 num_1 = get_singly_linked_list_from_values([1,2,3])
 num_2 = get_singly_linked_list_from_values([4,8,6])
 
-sum_head = add_linked_list_numbers(num_1, num_2)
+desired_sum = get_singly_linked_list_from_values([5,0,0,1])
+calculated_sum = add_linked_list_numbers(num_1, num_2)
 
-sum_value, power_10 = 0, 0
+assert linked_lists_equal(desired_sum, calculated_sum)
 
-current = sum_head
-sum_value += current.data * pow(10, power_10)
 
-while current.next is not None:
-    current, power_10 = current.next, power_10 + 1
-    sum_value += current.data * pow(10, power_10)
+num_1 = get_singly_linked_list_from_values([1,1,1,0,1,7])
+num_2 = get_singly_linked_list_from_values([2,3,4,0,9,4])
 
-assert sum_value == (321+684)
+desired_sum = get_singly_linked_list_from_values([3,4,5,0,0,2,1])
+calculated_sum = add_linked_list_numbers(num_1, num_2)
+
+assert linked_lists_equal(desired_sum, calculated_sum)
