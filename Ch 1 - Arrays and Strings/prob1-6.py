@@ -13,7 +13,7 @@ def rotate_90_using_zip(image):
 	# zip matches up nth elements of each tuple into their own tuple
 	# list turns the zip object into a list
 	# we have a list of tuples now, which is the rotated image
-	tupled_list = list(zip(*image[::-1]))
+	tupled_list = list(zip(*reversed(image)))
 
 	# use list comprehension to turn list of tuples into
 	# list of lists
@@ -21,7 +21,7 @@ def rotate_90_using_zip(image):
 
 def rotate_90_no_help(image):
 
-	reversed_rows = image[::-1]
+	reversed_rows = [list(row) for row in reversed(image)]
 	row_length = len(reversed_rows[0])
 
 	new_image = list()
